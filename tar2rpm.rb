@@ -16,7 +16,14 @@ class Tar2Rpm
   end
   
   def create_spec_file(file, args)
-    file.puts "NAME=#{args[:name]}"
+    file.puts "Name: #{args[:name]}"
+    file.puts "Version: #{args[:version]}"
+    file.puts "Release: 1"
+    file.puts "Vendor: Canoe Ventures, LLC"
+    file.puts "Summary: #{args[:summary]}"
+    file.puts "Source0: #{args[:tar_filename]}"
+    file.puts "BuildRoot: /var/tmp/#{args[:name]}-buildroot"
+    file.puts "BuildArch: #{args[:arch]}"
   end
 
 end

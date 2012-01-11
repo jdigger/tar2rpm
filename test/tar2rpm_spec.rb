@@ -43,8 +43,10 @@ describe Tar2Rpm do
 
     it "should create a simple Spec file with the list of files in it" do
       File.open("#{@tmpdir}/test.spec", 'w') do |file|
-        @tar2rpm.create_spec_file(file, :name => 'a name')
+        @tar2rpm.create_spec_file(file, :name => 'simple', :version => '3.4', :summary => "A simple example", :tar_filename => "simple.tar", :arch => 'x86_64')
       end
+      
+      compare_files("#{@tmpdir}/test.spec", "#{File.dirname(__FILE__)}/expected_simple.spec")
     end
 
   end
@@ -54,4 +56,11 @@ end
 
 def dir_files(dir)
   Dir.entries(dir).grep(/^[^.]/)
+end
+
+
+def compare_files(file1name, file2name)
+  str1 = IO.read(file1name)
+  str2 = IO.read(file2name)
+  str1.should == str2
 end
