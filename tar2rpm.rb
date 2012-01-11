@@ -1,4 +1,20 @@
 puts RUBY_DESCRIPTION
+
+TOP_DIR = '/tmp/rpm'
+SOURCES_DIR = "#{TOP_DIR}/SOURCES"
+
+class Tar2Rpm
+
+  def extract_tar(tarfile_name, target_dirname)
+     puts `cd #{target_dirname} && tar xvf #{tarfile_name}`
+  end
+
+  def tar_content_filenames(tarfile_name)
+     `tar tf #{tarfile_name}`
+  end
+
+end
+
 # This script creates an RPM from a tar file.
 # $1 : tar file
 
