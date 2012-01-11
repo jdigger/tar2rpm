@@ -6,7 +6,9 @@ SOURCES_DIR = "#{TOP_DIR}/SOURCES"
 class Tar2Rpm
 
   def extract_tar(tarfile_name, target_dirname)
-     puts `cd #{target_dirname} && tar xvf #{tarfile_name}`
+    Dir.chdir(target_dirname) do
+     `tar xf #{tarfile_name}`
+    end
   end
 
   def tar_content_filenames(tarfile_name)
