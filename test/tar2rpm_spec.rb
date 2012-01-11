@@ -41,8 +41,9 @@ describe Tar2Rpm do
   describe "working with a Spec file" do
 
     it "should create a simple Spec file with the list of files in it" do
+      tarfiles = ["file1.txt", "file2.txt"]
       File.open("#{@tmpdir}/test.spec", 'w') do |file|
-        @tar2rpm.create_spec_file(file, :name => 'simple', :version => '3.4', :summary => "A simple example", :tar_filename => "simple.tar", :arch => 'x86_64')
+        @tar2rpm.create_spec_file(file, :name => 'simple', :version => '3.4', :summary => "A simple example", :description => "A simple description.", :tar_filename => "simple.tar", :arch => 'x86_64', :files => tarfiles)
       end
       
       compare_files("#{@tmpdir}/test.spec", "#{File.dirname(__FILE__)}/expected_simple.spec")
