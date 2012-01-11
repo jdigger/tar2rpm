@@ -1,4 +1,4 @@
-puts RUBY_DESCRIPTION
+#puts RUBY_DESCRIPTION
 
 TOP_DIR = '/tmp/rpm'
 SOURCES_DIR = "#{TOP_DIR}/SOURCES"
@@ -13,6 +13,10 @@ class Tar2Rpm
 
   def tar_content_filenames(tarfile_name)
      `tar tf #{tarfile_name}`
+  end
+  
+  def create_spec_file(file, args)
+    file.puts "NAME=#{args[:name]}"
   end
 
 end

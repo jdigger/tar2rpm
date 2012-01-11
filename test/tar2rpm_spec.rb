@@ -1,5 +1,6 @@
 require_relative '../tar2rpm'
 require 'tmpdir'
+include FileUtils
 
 describe Tar2Rpm do
   
@@ -27,7 +28,11 @@ describe Tar2Rpm do
   end
   
 
-  it "should create a simple Spec file with the list of files in it"
+  it "should create a simple Spec file with the list of files in it" do
+    File.open("#{@tmpdir}/test.spec", 'w') do |file|
+      @tar2rpm.create_spec_file(file, :name => 'a name')
+    end
+  end
 
 end
 
@@ -42,16 +47,6 @@ def with_tmpdir
   begin
     yield(tmpdir)
   ensure
-    rmdir_force(tmpdir)
+    rm_rf(tmpdir)
   end
-end
-
-
-def rmdir_force(dir)
-  file_entries = dir_files(dir)
-  file_entries.each {|x|
-    file = "#{dir}/#{x}"
-    File.delete(file)
-  }
-  Dir.rmdir(dir)
 end
