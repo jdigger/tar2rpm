@@ -23,17 +23,16 @@ describe Tar2Rpm do
   
     before(:each) do
       @tarfile = "#{File.dirname(__FILE__)}/simple.tar"
+      @expected_files = ["file1.txt", "file2.txt"]
     end
 
     it "should read the file names in the tar" do
-      @tar2rpm.tar_content_filenames(@tarfile).should == "file1.txt\nfile2.txt\n"
+      @tar2rpm.tar_content_filenames(@tarfile).should == @expected_files
     end
 
     it "should extract the tar to a directory" do
       @tar2rpm.extract_tar(@tarfile, @tmpdir)
-      file_entries = dir_files(@tmpdir)
-      file_entries.should include('file1.txt')
-      file_entries.should include('file2.txt')
+      dir_files(@tmpdir).should == @expected_files
     end
 
   end  
