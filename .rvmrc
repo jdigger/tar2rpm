@@ -55,11 +55,11 @@ fi
 # it be automatically loaded. Uncomment the following and adjust the filename if
 # necessary.
 #
-# filename=".gems"
-# if [[ -s "$filename" ]]
-# then
-#   rvm gemset import "$filename" | grep -v already | grep -v listed | grep -v complete | sed '/^$/d'
-# fi
+filename=".gems"
+if [[ -s "$filename" ]]
+then
+  rvm gemset import "$filename" | grep -v already | grep -v listed | grep -v complete | sed '/^$/d'
+fi
 
 # If you use bundler, this might be useful to you:
 # if [[ -s Gemfile ]] && ! command -v bundle >/dev/null
