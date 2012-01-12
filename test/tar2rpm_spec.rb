@@ -35,7 +35,16 @@ describe Tar2Rpm do
       dir_files(@tmpdir).should == @expected_files
     end
 
-  end  
+  end
+
+
+  describe "creating RPM build" do
+    
+    it "should create the standard directories" do
+      @tar2rpm.create_build_area("/tmp/tar2rpm")
+    end
+
+  end
 
 
   describe "working with a Spec file" do
@@ -45,7 +54,7 @@ describe Tar2Rpm do
       File.open("#{@tmpdir}/test.spec", 'w') do |file|
         @tar2rpm.create_spec_file(file, :name => 'simple', :version => '3.4', :summary => "A simple example", :description => "A simple description.", :tar_filename => "simple.tar", :arch => 'x86_64', :files => tarfiles)
       end
-      
+
       compare_files("#{@tmpdir}/test.spec", "#{File.dirname(__FILE__)}/expected_simple.spec")
     end
 

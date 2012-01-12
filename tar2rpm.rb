@@ -1,3 +1,5 @@
+include FileUtils
+
 class Tar2Rpm
 
   def extract_tar(tarfile_name, target_dirname)
@@ -15,6 +17,12 @@ class Tar2Rpm
   
   def convert_filenames_to_rpm(filenames)
     filenames.map {|file| file.start_with?('/') ? file : file.insert(0, '/')}.join("\n")
+  end
+  
+  
+  def create_build_area(topdir)
+    rm_rf(topdir)
+    FileUtils.mkdir_p(["#{topdir}/BUILD", "#{topdir}/RPMS", "#{topdir}/SOURCES", "#{topdir}/SPECS", "#{topdir}/SRPMS"])
   end
 
 
