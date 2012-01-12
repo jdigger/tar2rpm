@@ -1,47 +1,82 @@
 include FileUtils
 
-class Tar2Rpm
+module Tar2Rpm
 
-  def extract_tar(tarfile_name, target_dirname)
-    Dir.chdir(target_dirname) do
-     `tar xf #{tarfile_name}`
+  class Tar
+    attr_reader :filename
+
+
+    def initialize(filename)
+      raise "File does not exist at #{filename}" unless File.exists?(filename)
+      @filename = filename
+    end
+
+
+    def extract_tar(target_dirname)
+      Dir.chdir(target_dirname) do
+        `tar xf #{filename}`
+      end
+    end
+
+
+    def tar_content_filenames
+       `tar tf #{filename}`.split("\n")
     end
   end
 
 
-  def tar_content_filenames(tarfile_name)
-     str = `tar tf #{tarfile_name}`
-     str.split("\n")
-  end
-  
-  
-  def convert_filenames_to_rpm(filenames)
-    filenames.map {|file| file.start_with?('/') ? file : file.insert(0, '/')}.join("\n")
-  end
-  
-  
-  def create_build_area(topdir)
-    rm_rf(topdir)
-    FileUtils.mkdir_p(["#{topdir}/BUILD", "#{topdir}/RPMS", "#{topdir}/SOURCES", "#{topdir}/SPECS", "#{topdir}/SRPMS"])
-  end
-
-
-  def create_spec_file(file, args)
-    raise "Need to supply :tar_filename" unless (args[:tar_filename])
-    raise "Need to supply :version" unless (args[:version])
-
-    args[:name] = args[:tar_filename].sub(/^(.*)\.(tar|tgz|tar\.gz)/, '\1') unless (args[:name])
-    args[:arch] = 'noarch' unless (args[:arch])
+  class BuildRpm
     
-    unless (args[:files]) then
-      raise "Could not find '#{args[:tar_filename]}' in '#{Dir.pwd}' to extract file names from for :files." unless File.exists?(args[:tar_filename])
-      args[:files] = tar_content_filenames(args[:tar_filename])
+    attr_reader :top_dir, :tar, :tar_filename, :version, :name, :arch, :files, :description, :summary
+
+    def initialize(p)
+      self.top_dir = p[:top_dir]
+      self.tar = p[:tar]
+      @tar_filename = File.basename(@tar.filename)
+      self.version = p[:version]
+      @name = p[:name] ? p[:name] : tar_filename.sub(/^(.*)\.(tar|tgz|tar\.gz)/, '\1')
+      @arch = p[:arch] ? p[:arch] : 'noarch'
+      @description = p[:description] ? p[:description] : ''
+      @summary = p[:summary] ? p[:summary] : ''
+      if (p[:files]) then
+        @files = p[:files]
+      else
+        @files = @tar.tar_content_filenames
+      end
     end
 
-    file.puts <<EOF
+
+    def tar=(tar)
+      raise ArgumentError.new("Missing tar") unless tar
+      raise ArgumentError.new(":tar has to be a Tar2Rpm::Tar") unless tar.is_a? Tar2Rpm::Tar
+      @tar = tar
+    end
+
+
+    def top_dir=(top_dir)
+      raise ArgumentError.new('Need a top_dir') unless top_dir
+      @top_dir = top_dir
+    end
+
+
+    def version=(version)
+      raise ArgumentError.new('Need a version') unless version
+      @version = version
+    end
+
+
+    def create_build()
+      create_build_area()
+      create_spec_file("#{top_dir}/SPECS/#{name}.spec")
+    end
+
+
+    def create_spec_file(filename)
+      File.open(filename, 'w') do |file|
+        file.puts <<EOF
 %define _topdir    /var/tmp
-%define name       #{args[:name]}
-%define version    #{args[:version]}
+%define name       #{name}
+%define version    #{version}
 %define release    1
 %define buildroot  %{_topdir}/%{name}-%{version}-buildroot
 
@@ -49,13 +84,13 @@ Name: %{name}
 Version: %{version}
 Release: %{release}
 Vendor: Canoe Ventures, LLC
-Summary: #{args[:summary]}
-Source0: #{args[:tar_filename]}
+Summary: #{summary}
+Source0: #{tar_filename}
 BuildRoot: %{buildroot}
-BuildArch: #{args[:arch]}
+BuildArch: #{arch}
 
 %description
-#{args[:description]}
+#{description}
 
 %prep
 %setup -c -n %{name}-%{version}
@@ -71,8 +106,25 @@ BuildArch: #{args[:arch]}
 
 %files
 %defattr(-,root,root)
-#{convert_filenames_to_rpm(args[:files])}
+#{convert_filenames_to_rpm(files)}
 EOF
+      end
+    end
+
+
+    private
+
+    def create_build_area()
+      rm_rf(top_dir)
+      FileUtils.mkdir_p(["#{top_dir}/BUILD", "#{top_dir}/RPMS", "#{top_dir}/SOURCES",
+        "#{top_dir}/SPECS", "#{top_dir}/SRPMS"])
+    end
+
+
+    def convert_filenames_to_rpm(filenames)
+      filenames.map {|file| file.start_with?('/') ? file : file.insert(0, '/')}.join("\n")
+    end
+
   end
 
 end
