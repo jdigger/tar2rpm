@@ -14,13 +14,13 @@ module Tar2Rpm
 
     def extract_tar(target_dirname)
       Dir.chdir(target_dirname) do
-        `tar xf #{filename}`
+        `tar xzf #{filename}`
       end
     end
 
 
     def tar_content_filenames
-       `tar tf #{filename}`.split("\n")
+       `tar tzf #{filename}`.split("\n")
     end
   end
 
@@ -34,7 +34,7 @@ module Tar2Rpm
       self.tar = p[:tar]
       @tar_filename = File.basename(@tar.filename)
       self.version = p[:version]
-      @name = p[:name] ? p[:name] : tar_filename.sub(/^(.*)\.(tar|tgz|tar\.gz)/, '\1')
+      @name = p[:name] ? p[:name] : tar_filename.sub(/^(.*)\.(tar\.gz|tar|tgz)/, '\1')
       @arch = p[:arch] ? p[:arch] : 'noarch'
       @description = p[:description] ? p[:description] : ''
       @summary = p[:summary] ? p[:summary] : ''

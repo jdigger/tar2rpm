@@ -9,7 +9,9 @@ Version: %{version}
 Release: %{release}
 Vendor: Canoe Ventures, LLC
 Summary: A simple example
-Source0: simple.tar
+Source0: simple.tar.gz
+Group: Misc
+License: Unknown
 BuildRoot: %{buildroot}
 BuildArch: x86_64
 

@@ -6,7 +6,7 @@ describe Tar2Rpm do
   TEST_DIR = File.dirname(__FILE__)
 
   before(:each) do
-    @tar = Tar2Rpm::Tar.new("#{TEST_DIR}/simple.tar")
+    @tar = Tar2Rpm::Tar.new("#{TEST_DIR}/simple.tar.gz")
     @rpm_metadata = build_rpm = {version: '3.4', summary: "A simple example", description: "A simple description.", tar: @tar, arch: 'x86_64'}
   end
 
@@ -74,7 +74,7 @@ describe Tar2Rpm do
 
       dir_files(@rpm_metadata[:top_dir]).should == ["BUILD", "RPMS", "SOURCES", "SPECS", "SRPMS"]
       File.exist?("#{@rpm_metadata[:top_dir]}/SPECS/simple.spec").should be_true
-      File.exist?("#{@rpm_metadata[:top_dir]}/SOURCES/simple.tar").should be_true
+      File.exist?("#{@rpm_metadata[:top_dir]}/SOURCES/simple.tar.gz").should be_true
     end
 
   end
