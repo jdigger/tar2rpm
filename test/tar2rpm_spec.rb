@@ -54,7 +54,7 @@ describe Tar2Rpm do
       tarfiles = @tar2rpm.tar_content_filenames(tarfile)
       Dir.mkdir("/tmp/tar2rpm") unless Dir.exists?("/tmp/tar2rpm")
       File.open("/tmp/tar2rpm/test.spec", 'w') do |file|
-        @tar2rpm.create_spec_file(file, :name => 'simple', :version => '3.4', :summary => "A simple example", :description => "A simple description.", :tar_filename => "simple.tar", :arch => 'x86_64', :files => tarfiles)
+        @tar2rpm.create_spec_file(file, :version => '3.4', :summary => "A simple example", :description => "A simple description.", :tar_filename => "simple.tar", :arch => 'x86_64', :files => tarfiles)
       end
 
       compare_files("/tmp/tar2rpm/test.spec", "#{File.dirname(__FILE__)}/expected_simple.spec")

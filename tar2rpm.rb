@@ -19,6 +19,17 @@ class Tar2Rpm
 
 
   def create_spec_file(file, args)
+    raise "Need to supply :tar_filename" unless (args[:tar_filename])
+    raise "Need to supply :version" unless (args[:version])
+
+    args[:name] = args[:tar_filename].sub(/^(.*)\.(tar|tgz|tar\.gz)/, '\1') unless (args[:name])
+    args[:arch] = 'noarch' unless (args[:arch])
+    
+    unless (args[:files]) then
+      raise "Could not find '#{args[:tar_filename]}' in '#{Dir.pwd}' to extract file names from for :files." unless File.exists?(args[:tar_filename])
+      args[:files] = tar_content_filenames(args[:tar_filename])
+    end
+
     file.puts <<EOF
 %define _topdir    /var/tmp
 %define name       #{args[:name]}
