@@ -39,7 +39,6 @@ BuildArch: #{args[:arch]}
 #{args[:description]}
 
 %prep
-
 %setup -c -n %{name}-%{version}
 
 %build

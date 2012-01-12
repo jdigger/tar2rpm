@@ -17,7 +17,6 @@ BuildArch: x86_64
 A simple description.
 
 %prep
-
 %setup -c -n %{name}-%{version}
 
 %build
