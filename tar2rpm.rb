@@ -67,6 +67,7 @@ module Tar2Rpm
 
     def create_build()
       create_build_area()
+      copy_tar_file()
       create_spec_file("#{top_dir}/SPECS/#{name}.spec")
     end
 
@@ -123,6 +124,11 @@ EOF
 
     def convert_filenames_to_rpm(filenames)
       filenames.map {|file| file.start_with?('/') ? file : file.insert(0, '/')}.join("\n")
+    end
+
+
+    def copy_tar_file()
+      FileUtils.copy_file(tar.filename, "#{top_dir}/SOURCES/#{tar_filename}")
     end
 
   end
