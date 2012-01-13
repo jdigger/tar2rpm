@@ -1,8 +1,11 @@
-%define _topdir    /var/tmp
-%define name       simple
-%define version    3.4
-%define release    1
-%define buildroot  %{_topdir}/%{name}-%{version}-buildroot
+%define _topdir     /tmp/tar2rpm
+%define _tmppath    %{_topdir}/TMP
+%define _target_cpu noarch
+%define _target_os  linux
+%define name        simple
+%define version     3.4
+%define release     1
+%define buildroot   %{_topdir}/%{name}-%{version}-buildroot
 
 Name: %{name}
 Version: %{version}
@@ -13,7 +16,7 @@ Source0: simple.tar.gz
 Group: Misc
 License: Unknown
 BuildRoot: %{buildroot}
-BuildArch: x86_64
+BuildArch: %{_target_cpu}
 
 %description
 A simple description.

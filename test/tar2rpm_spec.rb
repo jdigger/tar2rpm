@@ -7,7 +7,7 @@ describe Tar2Rpm do
 
   before(:each) do
     @tar = Tar2Rpm::Tar.new("#{TEST_DIR}/simple.tar.gz")
-    @rpm_metadata = build_rpm = {version: '3.4', summary: "A simple example", description: "A simple description.", tar: @tar, arch: 'x86_64'}
+    @rpm_metadata = build_rpm = {version: '3.4', summary: "A simple example", description: "A simple description.", tar: @tar, arch: 'noarch'}
   end
 
 

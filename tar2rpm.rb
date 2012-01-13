@@ -75,11 +75,14 @@ module Tar2Rpm
     def create_spec_file(filename)
       File.open(filename, 'w') do |file|
         file.puts <<EOF
-%define _topdir    /var/tmp
-%define name       #{name}
-%define version    #{version}
-%define release    1
-%define buildroot  %{_topdir}/%{name}-%{version}-buildroot
+%define _topdir     /tmp/tar2rpm
+%define _tmppath    %{_topdir}/TMP
+%define _target_cpu #{arch}
+%define _target_os  linux
+%define name        #{name}
+%define version     #{version}
+%define release     1
+%define buildroot   %{_topdir}/%{name}-%{version}-buildroot
 
 Name: %{name}
 Version: %{version}
@@ -87,8 +90,10 @@ Release: %{release}
 Vendor: Canoe Ventures, LLC
 Summary: #{summary}
 Source0: #{tar_filename}
+Group: Misc
+License: Unknown
 BuildRoot: %{buildroot}
-BuildArch: #{arch}
+BuildArch: %{_target_cpu}
 
 %description
 #{description}
