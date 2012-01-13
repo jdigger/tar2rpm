@@ -79,6 +79,11 @@ describe Tar2Rpm do
         Tar2Rpm::BuildRpm.new(md).prefix.should == '/opt'
       end
 
+      it "should default the summary" do
+        md.delete(:summary)
+        Tar2Rpm::BuildRpm.new(md).summary.should == 'simple-3.4'
+      end
+
       it "should parse options for verbose" do
         md.delete(:verbose)
         Tar2Rpm::BuildRpm.new(md).verbose.should be_false

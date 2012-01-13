@@ -2,8 +2,8 @@
 
 require 'optparse'
 
-summary = ''
-description = ''
+summary = nil
+description = nil
 architecture = 'noarch'
 filename = nil
 top_dir = nil

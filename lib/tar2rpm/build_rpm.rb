@@ -21,7 +21,7 @@ module Tar2Rpm
       @arch = p[:arch] || DEFAULT_ARCH
       @prefix = p[:prefix] || DEFAULT_PREFIX
       @description = p[:description] || ''
-      @summary = p[:summary] || ''
+      @summary = p[:summary] || "#{name}-#{version}"
       @verbose = p[:verbose]
       if (p[:files]) then
         @files = p[:files]
@@ -58,18 +58,18 @@ module Tar2Rpm
 
     def build()
       create_build()
-      out = `rpmbuild -v -ba #{spec_filename} 2>&1`
+      out = `rpmbuild -v --define "_topdir #{top_dir}" -bb #{spec_filename} 2>&1`
       if $CHILD_STATUS != 0 then
         puts out
         exit($CHILD_STATUS.exitstatus)
       end
+      rm_rf("#{top_dir}/BUILD")
     end
 
 
     def create_spec_file(filename)
       File.open(filename, 'w') do |file|
         file.puts <<EOF
-%define _topdir     #{top_dir}
 %define _tmppath    %{_topdir}/TMP
 %define _target_cpu #{arch}
 %define _target_os  linux

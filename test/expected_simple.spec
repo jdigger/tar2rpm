@@ -1,4 +1,3 @@
-%define _topdir     /tmp/tar2rpm
 %define _tmppath    %{_topdir}/TMP
 %define _target_cpu noarch
 %define _target_os  linux
