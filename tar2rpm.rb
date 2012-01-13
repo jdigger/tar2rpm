@@ -25,8 +25,8 @@ module Tar2Rpm
 
     def filename=(filename)
       raise FileNotFoundError.new(filename) unless File.exists?(filename)
-      raise FilenameParsingError.new("This does not appear to be a TAR: #{filename}") unless filename =~ /\.(tar\.gz|tar|tgz)$/
-      raise FilenameParsingError.new("This does not appear to have a version in the name: #{filename}") unless filename =~ /-\d.*\.(tar\.gz|tar|tgz)$/
+      raise FilenameParsingError.new("This does not appear to be a TAR: #{filename}") unless filename =~ /\.(tar\.gz|tgz)$/
+      raise FilenameParsingError.new("This does not appear to have a version in the name: #{filename}") unless filename =~ /-\d.*\.(tar\.gz|tgz)$/
 
       @filename = filename
 
