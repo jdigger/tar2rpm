@@ -12,7 +12,7 @@ Version: %{version}
 Release: %{release}
 Vendor: Canoe Ventures, LLC
 Summary: A simple example
-Source0: simple.tar.gz
+Source0: simple-3.4.tar.gz
 Prefix: /opt
 Group: Misc
 License: Unknown

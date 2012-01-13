@@ -25,13 +25,21 @@ module Tar2Rpm
 
     def filename=(filename)
       raise FileNotFoundError.new(filename) unless File.exists?(filename)
+      raise FilenameParsingError.new("This does not appear to be a TAR: #{filename}") unless filename =~ /\.(tar\.gz|tar|tgz)$/
+      raise FilenameParsingError.new("This does not appear to have a version in the name: #{filename}") unless filename =~ /-\d.*\.(tar\.gz|tar|tgz)$/
+
       @filename = filename
 
-      
+      # extract the pieces from the name
+      /^(?<bn>.*)-(?<ver>\d.*?)\.(tar\.gz|tar|tgz)$/ =~ File.basename(filename)
+      @basename, @version = bn, ver
     end
 
 
     class FileNotFoundError < RuntimeError
+    end
+
+    class FilenameParsingError < RuntimeError
     end
 
   end
@@ -48,8 +56,8 @@ module Tar2Rpm
       self.top_dir = p[:top_dir]
       self.tar = p[:tar]
       @tar_filename = File.basename(@tar.filename)
-      self.version = p[:version]
-      @name = p[:name] ? p[:name] : tar_filename.sub(/^(.*)\.(tar\.gz|tar|tgz)/, '\1')
+      @version = p[:version] ? p[:version] : @tar.version
+      @name = p[:name] ? p[:name] : @tar.basename
       @arch = p[:arch] ? p[:arch] : DEFAULT_ARCH
       @prefix = p[:prefix] ? p[:prefix] : DEFAULT_PREFIX
       @description = p[:description] ? p[:description] : ''
@@ -72,12 +80,6 @@ module Tar2Rpm
     def top_dir=(top_dir)
       raise ArgumentError.new('Need a top_dir') unless top_dir
       @top_dir = top_dir
-    end
-
-
-    def version=(version)
-      raise ArgumentError.new('Need a version') unless version
-      @version = version
     end
 
 

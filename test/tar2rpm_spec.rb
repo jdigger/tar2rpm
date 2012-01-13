@@ -6,8 +6,8 @@ describe Tar2Rpm do
   TEST_DIR = File.dirname(__FILE__)
 
   before(:each) do
-    @tar = Tar2Rpm::Tar.new("#{TEST_DIR}/simple.tar.gz")
-    @rpm_metadata = build_rpm = {version: '3.4', summary: "A simple example", description: "A simple description.", tar: @tar, arch: 'noarch'}
+    @tar = Tar2Rpm::Tar.new("#{TEST_DIR}/simple-3.4.tar.gz")
+    @rpm_metadata = build_rpm = {summary: "A simple example", description: "A simple description.", tar: @tar, arch: 'noarch'}
   end
 
 
@@ -31,8 +31,15 @@ describe Tar2Rpm do
 
 
       it "should fail when passed a non-parsable filename" do
-        # ->{Tar2Rpm::Tar.new("#{TEST_DIR}/parsefile.tgz")}.should raise_error(ArgumentError)
-        # ->{Tar2Rpm::Tar.new("#{TEST_DIR}/parsefile-abc.tgz")}.should raise_error(ArgumentError)
+        ->{Tar2Rpm::Tar.new("#{TEST_DIR}/expected_simple.spec")}.should raise_error(Tar2Rpm::Tar::FilenameParsingError)
+        ->{Tar2Rpm::Tar.new("#{TEST_DIR}/parsefile.tgz")}.should raise_error(Tar2Rpm::Tar::FilenameParsingError)
+        ->{Tar2Rpm::Tar.new("#{TEST_DIR}/parsefile-abc.tgz")}.should raise_error(Tar2Rpm::Tar::FilenameParsingError)
+      end
+
+      it "should extract the basename and version" do
+        tar = Tar2Rpm::Tar.new("#{TEST_DIR}/simple-3.4.tar.gz")
+        tar.basename.should == 'simple'
+        tar.version.should == '3.4'
       end
 
     end
@@ -87,18 +94,23 @@ describe Tar2Rpm do
       end
     
       it "should catch missing tar" do
-         md.delete(:tar)
+        md.delete(:tar)
         ->{Tar2Rpm::BuildRpm.new(md)}.should raise_error(ArgumentError, /tar/)
       end
     
       it "should catch tar of wrong type" do
-         md[:tar] = ''
+        md[:tar] = ''
         ->{Tar2Rpm::BuildRpm.new(md)}.should raise_error(ArgumentError, /Tar2Rpm::Tar/)
       end
-    
-      it "should catch missing version" do
-         md.delete(:version)
-        ->{Tar2Rpm::BuildRpm.new(md)}.should raise_error(ArgumentError, 'Need a version')
+
+      it "should default the name based on the file name" do
+        md.delete(:name)
+        Tar2Rpm::BuildRpm.new(md).name.should == 'simple'
+      end
+
+      it "should default the version based on the file name" do
+        md.delete(:version)
+        Tar2Rpm::BuildRpm.new(md).version.should == '3.4'
       end
     end
     
@@ -109,7 +121,7 @@ describe Tar2Rpm do
 
       dir_files(@rpm_metadata[:top_dir]).should == ["BUILD", "RPMS", "SOURCES", "SPECS", "SRPMS"]
       File.exist?("#{@rpm_metadata[:top_dir]}/SPECS/simple.spec").should be_true
-      File.exist?("#{@rpm_metadata[:top_dir]}/SOURCES/simple.tar.gz").should be_true
+      File.exist?("#{@rpm_metadata[:top_dir]}/SOURCES/simple-3.4.tar.gz").should be_true
     end
 
   end
