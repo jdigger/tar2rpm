@@ -1,5 +1,6 @@
 require 'fileutils'
 include FileUtils
+require 'English'
 
 module Tar2Rpm
 
@@ -57,7 +58,11 @@ module Tar2Rpm
 
     def build()
       create_build()
-      `rpmbuild -v -ba #{spec_filename}`
+      out = `rpmbuild -v -ba #{spec_filename} 2>&1`
+      if $CHILD_STATUS != 0 then
+        puts out
+        exit($CHILD_STATUS.exitstatus)
+      end
     end
 
 
