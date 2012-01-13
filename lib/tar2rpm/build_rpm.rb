@@ -13,12 +13,12 @@ module Tar2Rpm
       self.top_dir = p[:top_dir]
       self.tar = p[:tar]
       @tar_filename = File.basename(@tar.filename)
-      @version = p[:version] ? p[:version] : @tar.version
-      @name = p[:name] ? p[:name] : @tar.basename
-      @arch = p[:arch] ? p[:arch] : DEFAULT_ARCH
-      @prefix = p[:prefix] ? p[:prefix] : DEFAULT_PREFIX
-      @description = p[:description] ? p[:description] : ''
-      @summary = p[:summary] ? p[:summary] : ''
+      @version = p[:version] || @tar.version
+      @name = p[:name] || @tar.basename
+      @arch = p[:arch] || DEFAULT_ARCH
+      @prefix = p[:prefix] || DEFAULT_PREFIX
+      @description = p[:description] || ''
+      @summary = p[:summary] || ''
       if (p[:files]) then
         @files = p[:files]
       else
