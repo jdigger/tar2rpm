@@ -36,6 +36,27 @@ describe Tar2Rpm do
   end
 
 
+  describe "when working with a Spec file" do
+
+    before(:each) do
+      @rpm_metadata[:top_dir] = Dir.mktmpdir
+      @build_rpm = Tar2Rpm::BuildRpm.new(@rpm_metadata)
+    end
+
+    after(:each) do
+      rm_rf(@build_rpm.top_dir)
+    end
+
+
+    it "should create a simple Spec file with the list of files in it" do
+      @build_rpm.create_spec_file("#{@build_rpm.top_dir}/test.spec")
+
+      compare_files("#{@build_rpm.top_dir}/test.spec", "#{TEST_DIR}/expected_simple.spec")
+    end
+
+  end
+
+
   describe "when creating RPM build" do
     
     describe "with missing meta-data" do
@@ -75,27 +96,6 @@ describe Tar2Rpm do
       dir_files(@rpm_metadata[:top_dir]).should == ["BUILD", "RPMS", "SOURCES", "SPECS", "SRPMS"]
       File.exist?("#{@rpm_metadata[:top_dir]}/SPECS/simple.spec").should be_true
       File.exist?("#{@rpm_metadata[:top_dir]}/SOURCES/simple.tar.gz").should be_true
-    end
-
-  end
-
-
-  describe "when working with a Spec file" do
-
-    before(:each) do
-      @rpm_metadata[:top_dir] = Dir.mktmpdir
-      @build_rpm = Tar2Rpm::BuildRpm.new(@rpm_metadata)
-    end
-
-    after(:each) do
-      rm_rf(@build_rpm.top_dir)
-    end
-
-
-    it "should create a simple Spec file with the list of files in it" do
-      @build_rpm.create_spec_file("#{@build_rpm.top_dir}/test.spec")
-
-      compare_files("#{@build_rpm.top_dir}/test.spec", "#{TEST_DIR}/expected_simple.spec")
     end
 
   end
