@@ -1,3 +1,4 @@
+require 'fileutils'
 include FileUtils
 
 module Tar2Rpm
@@ -7,7 +8,8 @@ module Tar2Rpm
     DEFAULT_PREFIX = '/opt'
     DEFAULT_ARCH = 'noarch'
 
-    attr_reader :top_dir, :tar, :tar_filename, :version, :name, :arch, :files, :description, :summary, :prefix
+    attr_reader :top_dir, :tar, :tar_filename, :version, :name, :arch,
+                :files, :description, :summary, :prefix, :verbose
 
     def initialize(p)
       self.top_dir = p[:top_dir]
@@ -19,6 +21,7 @@ module Tar2Rpm
       @prefix = p[:prefix] || DEFAULT_PREFIX
       @description = p[:description] || ''
       @summary = p[:summary] || ''
+      @verbose = p[:verbose]
       if (p[:files]) then
         @files = p[:files]
       else
@@ -97,6 +100,7 @@ EOF
     private
 
     def create_build_area()
+      puts "Building the RPM area: #{top_dir}" if verbose
       rm_rf(top_dir)
       FileUtils.mkdir_p(["#{top_dir}/BUILD", "#{top_dir}/RPMS", "#{top_dir}/SOURCES",
         "#{top_dir}/SPECS", "#{top_dir}/SRPMS"])
@@ -109,6 +113,7 @@ EOF
 
 
     def copy_tar_file()
+      puts "Copying the tar from #{tar.filename} to #{top_dir}/SOURCES/#{tar_filename}" if verbose
       FileUtils.copy_file(tar.filename, "#{top_dir}/SOURCES/#{tar_filename}")
     end
 

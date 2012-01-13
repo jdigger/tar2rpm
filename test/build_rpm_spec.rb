@@ -78,6 +78,17 @@ describe Tar2Rpm do
         md.delete(:prefix)
         Tar2Rpm::BuildRpm.new(md).prefix.should == '/opt'
       end
+
+      it "should parse options for verbose" do
+        md.delete(:verbose)
+        Tar2Rpm::BuildRpm.new(md).verbose.should be_false
+
+        md[:verbose] = true
+        Tar2Rpm::BuildRpm.new(md).verbose.should be_true
+
+        md[:verbose] = false
+        Tar2Rpm::BuildRpm.new(md).verbose.should be_false
+      end
     end
     
     it "should create the Spec and copy the tar" do
