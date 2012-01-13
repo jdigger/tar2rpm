@@ -6,6 +6,8 @@ summary = ''
 description = ''
 architecture = 'noarch'
 filename = nil
+top_dir = nil
+verbose = false
 
 OptionParser.new do |opts|
   opts.banner = "Usage: tar2rpm [ options ] tarfile"
@@ -18,8 +20,16 @@ OptionParser.new do |opts|
     description = desc
   end
 
-  opts.on("-a", "--arch val", String, "Architecture (noarch, x86_64, i386)") do |arch|
+  opts.on("-a", "--arch val",  [:noarch, :x86_64, :i386], String, "Architecture") do |arch|
     architecture = arch
+  end
+
+  opts.on("-t", "--topdir val",  String, "Where to put the files for building the RPM") do |td|
+    top_dir = td
+  end
+
+  opts.on("-v", "--verbose", "Verbose") do |v|
+    verbose = true
   end
 
   opts.on("-h", "--help", "Show this message") do
@@ -48,7 +58,11 @@ OptionParser.new do |opts|
   end
 end
 
-puts "summary #{summary}"
-puts "desc #{description}"
-puts "architecture #{architecture}"
-puts "filename #{filename}"
+require_relative '../lib/tar2rpm/build_rpm'
+require_relative '../lib/tar2rpm/tar'
+
+build_rpm = Tar2Rpm::BuildRpm.new(tar: Tar2Rpm::Tar.new(filename), top_dir: top_dir,
+              summary: summary, description: description, arch: architecture, verbose: verbose)
+build_rpm.create_build
+
+puts "Ready to package #{filename} in #{top_dir}"
