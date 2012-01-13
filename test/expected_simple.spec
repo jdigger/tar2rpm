@@ -13,6 +13,7 @@ Release: %{release}
 Vendor: Canoe Ventures, LLC
 Summary: A simple example
 Source0: simple.tar.gz
+Prefix: /opt
 Group: Misc
 License: Unknown
 BuildRoot: %{buildroot}
@@ -28,12 +29,12 @@ A simple description.
 
 %install
 [ -d ${RPM_BUILD_ROOT} ] && rm -rf ${RPM_BUILD_ROOT}
-/bin/mkdir -p ${RPM_BUILD_ROOT}
-/bin/cp -vR ${RPM_BUILD_DIR}/%{name}-%{version}/* ${RPM_BUILD_ROOT}/
+/bin/mkdir -p ${RPM_BUILD_ROOT}/opt
+/bin/cp -vR ${RPM_BUILD_DIR}/%{name}-%{version}/* ${RPM_BUILD_ROOT}/opt/
 
 %clean
 
 %files
 %defattr(-,root,root)
-/file1.txt
-/file2.txt
+/opt/file1.txt
+/opt/file2.txt

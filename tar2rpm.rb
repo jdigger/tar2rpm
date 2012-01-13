@@ -26,8 +26,11 @@ module Tar2Rpm
 
 
   class BuildRpm
-    
-    attr_reader :top_dir, :tar, :tar_filename, :version, :name, :arch, :files, :description, :summary
+
+    DEFAULT_PREFIX = '/opt'
+    DEFAULT_ARCH = 'noarch'
+
+    attr_reader :top_dir, :tar, :tar_filename, :version, :name, :arch, :files, :description, :summary, :prefix
 
     def initialize(p)
       self.top_dir = p[:top_dir]
@@ -35,7 +38,8 @@ module Tar2Rpm
       @tar_filename = File.basename(@tar.filename)
       self.version = p[:version]
       @name = p[:name] ? p[:name] : tar_filename.sub(/^(.*)\.(tar\.gz|tar|tgz)/, '\1')
-      @arch = p[:arch] ? p[:arch] : 'noarch'
+      @arch = p[:arch] ? p[:arch] : DEFAULT_ARCH
+      @prefix = p[:prefix] ? p[:prefix] : DEFAULT_PREFIX
       @description = p[:description] ? p[:description] : ''
       @summary = p[:summary] ? p[:summary] : ''
       if (p[:files]) then
@@ -90,6 +94,7 @@ Release: %{release}
 Vendor: Canoe Ventures, LLC
 Summary: #{summary}
 Source0: #{tar_filename}
+Prefix: #{prefix}
 Group: Misc
 License: Unknown
 BuildRoot: %{buildroot}
@@ -105,8 +110,8 @@ BuildArch: %{_target_cpu}
 
 %install
 [ -d ${RPM_BUILD_ROOT} ] && rm -rf ${RPM_BUILD_ROOT}
-/bin/mkdir -p ${RPM_BUILD_ROOT}
-/bin/cp -vR ${RPM_BUILD_DIR}/%{name}-%{version}/* ${RPM_BUILD_ROOT}/
+/bin/mkdir -p ${RPM_BUILD_ROOT}#{prefix}
+/bin/cp -vR ${RPM_BUILD_DIR}/%{name}-%{version}/* ${RPM_BUILD_ROOT}#{prefix}/
 
 %clean
 
@@ -128,7 +133,7 @@ EOF
 
 
     def convert_filenames_to_rpm(filenames)
-      filenames.map {|file| file.start_with?('/') ? file : file.insert(0, '/')}.join("\n")
+      filenames.map {|file| file.start_with?(prefix) ? file : file.insert(0, prefix+'/')}.join("\n")
     end
 
 
