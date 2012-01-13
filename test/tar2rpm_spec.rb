@@ -112,6 +112,16 @@ describe Tar2Rpm do
         md.delete(:version)
         Tar2Rpm::BuildRpm.new(md).version.should == '3.4'
       end
+
+      it "should default the architecture" do
+        md.delete(:arch)
+        Tar2Rpm::BuildRpm.new(md).arch.should == 'noarch'
+      end
+
+      it "should default the prefix" do
+        md.delete(:prefix)
+        Tar2Rpm::BuildRpm.new(md).prefix.should == '/opt'
+      end
     end
     
     it "should create the Spec and copy the tar" do
