@@ -63,6 +63,4 @@ require_relative '../lib/tar2rpm/tar'
 
 build_rpm = Tar2Rpm::BuildRpm.new(tar: Tar2Rpm::Tar.new(filename), top_dir: top_dir,
               summary: summary, description: description, arch: architecture, verbose: verbose)
-build_rpm.create_build
-
-puts "Ready to package #{filename} in #{top_dir}"
+build_rpm.build

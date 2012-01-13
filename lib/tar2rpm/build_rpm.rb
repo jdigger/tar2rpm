@@ -43,6 +43,11 @@ module Tar2Rpm
     end
 
 
+    def spec_filename
+      "#{top_dir}/SPECS/#{name}.spec"
+    end
+
+
     def create_build()
       create_build_area()
       copy_tar_file()
@@ -50,10 +55,16 @@ module Tar2Rpm
     end
 
 
+    def build()
+      create_build()
+      `rpmbuild -v -ba #{spec_filename}`
+    end
+
+
     def create_spec_file(filename)
       File.open(filename, 'w') do |file|
         file.puts <<EOF
-%define _topdir     /tmp/tar2rpm
+%define _topdir     #{top_dir}
 %define _tmppath    %{_topdir}/TMP
 %define _target_cpu #{arch}
 %define _target_os  linux
