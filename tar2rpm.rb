@@ -3,12 +3,11 @@ include FileUtils
 module Tar2Rpm
 
   class Tar
-    attr_reader :filename
+    attr_reader :filename, :basename, :version
 
 
     def initialize(filename)
-      raise "File does not exist at #{filename}" unless File.exists?(filename)
-      @filename = filename
+      self.filename = filename
     end
 
 
@@ -22,6 +21,19 @@ module Tar2Rpm
     def tar_content_filenames
        `tar tzf #{filename}`.split("\n")
     end
+
+
+    def filename=(filename)
+      raise FileNotFoundError.new(filename) unless File.exists?(filename)
+      @filename = filename
+
+      
+    end
+
+
+    class FileNotFoundError < RuntimeError
+    end
+
   end
 
 

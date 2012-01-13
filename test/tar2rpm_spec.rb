@@ -23,6 +23,20 @@ describe Tar2Rpm do
       rm_rf(@tmpdir)
     end
 
+    describe "doing validations" do
+
+      it "should fail when passed a non-existant filename" do
+        ->{Tar2Rpm::Tar.new("bogus.tar.gz")}.should raise_error(Tar2Rpm::Tar::FileNotFoundError)
+      end
+
+
+      it "should fail when passed a non-parsable filename" do
+        # ->{Tar2Rpm::Tar.new("#{TEST_DIR}/parsefile.tgz")}.should raise_error(ArgumentError)
+        # ->{Tar2Rpm::Tar.new("#{TEST_DIR}/parsefile-abc.tgz")}.should raise_error(ArgumentError)
+      end
+
+    end
+
 
     it "should read the file names in the tar" do
       @tar.tar_content_filenames.should == expected_files
@@ -69,22 +83,22 @@ describe Tar2Rpm do
 
       it "should catch missing top_dir" do
         md.delete(:top_dir)
-        ->{Tar2Rpm::BuildRpm.new(md)}.should raise_error(ArgumentError)
+        ->{Tar2Rpm::BuildRpm.new(md)}.should raise_error(ArgumentError, /top_dir/)
       end
     
       it "should catch missing tar" do
          md.delete(:tar)
-        ->{Tar2Rpm::BuildRpm.new(md)}.should raise_error(ArgumentError)
+        ->{Tar2Rpm::BuildRpm.new(md)}.should raise_error(ArgumentError, /tar/)
       end
     
       it "should catch tar of wrong type" do
          md[:tar] = ''
-        ->{Tar2Rpm::BuildRpm.new(md)}.should raise_error(ArgumentError)
+        ->{Tar2Rpm::BuildRpm.new(md)}.should raise_error(ArgumentError, /Tar2Rpm::Tar/)
       end
     
       it "should catch missing version" do
          md.delete(:version)
-        ->{Tar2Rpm::BuildRpm.new(md)}.should raise_error(ArgumentError)
+        ->{Tar2Rpm::BuildRpm.new(md)}.should raise_error(ArgumentError, 'Need a version')
       end
     end
     
