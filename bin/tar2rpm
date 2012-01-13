@@ -1,66 +1,16 @@
 #!/usr/bin/env ruby -wKU
 
-require 'optparse'
-
-summary = nil
-description = nil
-architecture = 'noarch'
-filename = nil
-top_dir = nil
-verbose = false
-
-OptionParser.new do |opts|
-  opts.banner = "Usage: tar2rpm [ options ] tarfile"
-
-  opts.on("-s", "--summary msg", String, "Package Summary") do |sum|
-    summary = sum
-  end
-
-  opts.on("-d", "--descr msg", String, "Package Description") do |desc|
-    description = desc
-  end
-
-  opts.on("-a", "--arch val",  [:noarch, :x86_64, :i386], String, "Architecture") do |arch|
-    architecture = arch
-  end
-
-  opts.on("-t", "--topdir val",  String, "Where to put the files for building the RPM") do |td|
-    top_dir = td
-  end
-
-  opts.on("-v", "--verbose", "Verbose") do |v|
-    verbose = true
-  end
-
-  opts.on("-h", "--help", "Show this message") do
-    puts opts
-    exit
-  end
-
-  begin
-    ARGV << "-h" if ARGV.empty?
-    opts.parse!(ARGV)
-
-    if ARGV.empty?
-      STDERR.puts "Must have at least one file\n\n", opts
-      exit(-1)
-    end
-
-    filename = ARGV.pop
-
-    unless ARGV.empty?
-      STDERR.puts "Can only handle one file\n\n", opts
-      exit(-1)
-    end
-  rescue OptionParser::ParseError => e
-    STDERR.puts e.message, "\n", opts
-    exit(-1)
-  end
-end
-
 require_relative '../lib/tar2rpm/build_rpm'
 require_relative '../lib/tar2rpm/tar'
+require_relative '../lib/tar2rpm/options'
 
-build_rpm = Tar2Rpm::BuildRpm.new(tar: Tar2Rpm::Tar.new(filename), top_dir: top_dir,
-              summary: summary, description: description, arch: architecture, verbose: verbose)
-build_rpm.build
+options = Tar2Rpm::Options.new(ARGV)
+
+begin
+  build_rpm = Tar2Rpm::BuildRpm.new(tar: Tar2Rpm::Tar.new(options.filename), top_dir: options.top_dir,
+                summary: options.summary, description: options.description, arch: options.architecture,
+                verbose: options.verbose)
+  build_rpm.build
+rescue Tar2Rpm::Tar::FileNotFoundError => e
+  raise "Could not find #{e.message}"
+end
