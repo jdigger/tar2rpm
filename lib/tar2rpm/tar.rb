@@ -1,5 +1,13 @@
 module Tar2Rpm
 
+  # This class represents a TAR/TGZ file.
+  # (Currently only works for GZipped TAR files.)
+  #
+  # This knows how to:
+  # * list the files in the tar
+  # * extract the contents to a directory
+  # * extract the "package" name and version from the tar file name
+  #
   class Tar
     attr_reader :filename, :basename, :version
 
@@ -16,6 +24,7 @@ module Tar2Rpm
     end
 
 
+    # Returns the files inside the tar as an array.
     def tar_content_filenames
        `tar tzf #{filename}`.split("\n")
     end
